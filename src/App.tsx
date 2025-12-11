@@ -1,30 +1,20 @@
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-type directions = 
-| "up"
-| "down"
-| "left"
-| "right";
+type directions = "up" | "down" | "left" | "right";
 
 function App() {
-  const gridRef = useRef<HTMLDivElement>(null);
-  const cells = [];
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cells: number[][] = [];
   const [direction, setDirection] = useState<directions>("up");
   const [headCoords, setHeadCoords] = useState({
     x: 10,
     y: 10,
   });
 
-  for (let i = 0; i < 20; i++) {
-    cells.push(new Array());
-    for (let j = 0; j < 20; j++) {
-      cells[i][j] = <div className="cell" key={`${i}${j}`} data-x={i} data-y={j}></div>;
-    }
-  }
-
   useEffect(() => {
-    if (gridRef.current) {
-      gridRef.current.addEventListener("keydown", (e) => {
+    if (canvasRef.current) {
+      canvasRef.current.addEventListener("keydown", (e) => {
+        console.log(e.key);
         switch (e.key) {
           case "w":
           case "ArrowUp":
@@ -43,23 +33,45 @@ function App() {
             setDirection("right");
             break;
         }
-      })
+      });
     }
 
+    for (let i = 0; i < 20; i++) {
+      cells.push(new Array<number>());
+      for (let j = 0; j < 20; j++) {
+        cells[i][j] = -1;
+      }
+    }
+
+    const directionTest = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
     const move = () => {
+      const trueDirection = directionTest[direction];
+      for (let i = 0; i < 20; i++) {
+        for (let j = 0; j < 20; j++) {
+          if (cells[i][j] == 0) {
+            console.log(i, j, trueDirection);
+          }
+        }
+      }
+      console.log(cells);
+    };
 
-    }
-
+    setHeadCoords({
+      x: 10,
+      y: 10,
+    });
+    cells[headCoords.x][headCoords.y] = 0;
     setInterval(() => {
-      
-    }, 500);
-  }, []);
+      move();
+    }, 5000);
+  }, [direction, canvasRef]);
 
-  return (
-    <div className='gird' ref={gridRef}>
-      {cells}
-    </div>
-  )
+  return <canvas id="canvas" width={800} height={800} ref={canvasRef} />;
 }
 
-export default App
+export default App;

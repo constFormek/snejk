@@ -7,14 +7,6 @@ body {
   height: 100vh;
 }
 
-.gird {
-  display: grid;
-  grid-template: repeat(20, 40px) / repeat(20, 40px);
-  border: 1px solid #ffffff80;
-  grid-auto-flow: row;
-}
-
-.cell {
-  border: 0.5px solid #ffffff80;
-  
+#canvas {
+  border: 1px solid white;
 }
