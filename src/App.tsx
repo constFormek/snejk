@@ -8,11 +8,16 @@ function App() {
     y: 10,
   });
   const [direction, setDirection] = useState<directions>("up");
-  const [bodyArr, setBodyArr] = useState<{ x: number; y: number }[]>([{x: 5, y: 11}]);
+  const [bodyArr, setBodyArr] = useState<{ x: number; y: number }[]>([
+    { x: 5, y: 11 },
+    { x: 5, y: 12 },
+    { x: 5, y: 13 },
+  ]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const directionRef = useRef(direction);
   const headRef = useRef(headCoords);
+  const bodyArrRef = useRef(bodyArr);
 
   const directionTest = {
     up: { x: 0, y: -1 },
@@ -25,17 +30,24 @@ function App() {
     const trueDirection = directionTest[directionRef.current];
     const newHeadCoords = {
       x: headRef.current.x + trueDirection.x,
-      y: headRef.current.y + trueDirection.y
-    }
+      y: headRef.current.y + trueDirection.y,
+    };
     if (newHeadCoords.x >= 20) return;
     if (newHeadCoords.y >= 20) return;
     if (newHeadCoords.x < 0) return;
     if (newHeadCoords.y < 0) return;
+
+    let newBodyArr: { x: number; y: number }[] = [];
+    newBodyArr.push(Object.assign({}, headRef.current));
+    for (let i = 0; i < bodyArrRef.current.length - 1; i++) {
+      newBodyArr.push(bodyArrRef.current[i]);
+    }
+    setBodyArr(newBodyArr);
+
     headCoords.x = newHeadCoords.x;
     headCoords.y = newHeadCoords.y;
 
-    const lastBodyElement = Object.assign({}, bodyArr[bodyArr.length - 1]);
-
+    console.log(bodyArrRef.current)
     console.log(headRef.current);
   };
 
@@ -66,7 +78,7 @@ function App() {
 
     const interval = setInterval(() => {
       move();
-    }, 250);
+    }, 200);
     return () => clearInterval(interval);
   }, []);
 
@@ -77,6 +89,10 @@ function App() {
   useEffect(() => {
     headRef.current = headCoords;
   }, [headCoords]);
+
+  useEffect(() => {
+    bodyArrRef.current = bodyArr;
+  }, [bodyArr]);
 
   let ctx: CanvasRenderingContext2D | null;
   if (canvasRef.current) {
@@ -91,8 +107,8 @@ function App() {
     ctx.fillStyle = "white";
     ctx.fillRect(headRef.current.x * 40, headRef.current.y * 40, 40, 40);
 
-    ctx.fillStyle = "rgb(255 255 255 / 50%)";
-    bodyArr.forEach(cell => {
+    ctx.fillStyle = "rgb(255 255 255 / 75%)";
+    bodyArrRef.current.forEach((cell) => {
       ctx?.fillRect(cell.x * 40, cell.y * 40, 40, 40);
     });
   };
